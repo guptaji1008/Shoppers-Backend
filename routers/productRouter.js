@@ -1,10 +1,12 @@
 import express from "express"
 import asyncHandler from "../middleware/asyncHandler.js"
-import { createProduct, createProductReview, deleteProduct, deleteProductReview, getProducts, getSingleProduct, getTopProduct, updateProduct, updateProductReview } from "../controller/product.js"
+import { createProduct, createProductReview, deleteProduct, deleteProductReview, getAllProducts, getProducts, getSingleProduct, getTopProduct, updateProduct, updateProductReview } from "../controller/product.js"
 import { protect, admin } from '../middleware/authMiddleware.js'
 const router = express.Router()
 
 router.route('/').get(asyncHandler(getProducts)).post(protect, admin, asyncHandler(createProduct))
+
+router.get('/allproducts', asyncHandler(getAllProducts))
 
 router.get("/top", asyncHandler(getTopProduct))
 

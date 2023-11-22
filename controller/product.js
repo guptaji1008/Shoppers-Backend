@@ -19,6 +19,15 @@ export const getProducts = async (req, res) => {
 }
 
 // @desc  Fetch all product
+// @route  GET /api/allproducts
+// @access  public
+export const getAllProducts = async (req, res) => {
+    const allProducts = await Product.find()
+    if (!allProducts) return helperMessage(res, "Products not found", 404)
+    res.status(200).json(allProducts)
+}
+
+// @desc  Fetch all product
 // @route  GET /api/products/:id
 // @access  public
 export const getSingleProduct = async (req, res) => {
