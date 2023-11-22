@@ -29,20 +29,6 @@ app.use("/api/upload", uploadRouter);
 const __dirname = path.resolve();
 app.use('/uploads', express.static(path.join(__dirname, '/uploads')))
 
-if (process.env.NODE_ENV === "production") {
-  // set static folder
-  app.use(express.static(path.join(__dirname, '../frondend/dist')));
-
-  // any route ie not api will be redirected  to index.html
-  app.get('*', (req, res) => {
-    res.sendFile(path.resolve(__dirname, 'frondend', 'dist', 'index.html'))
-  })
-} else {
-  app.get('/', (req, res) => {
-    res.send('Api is running...');
-  })
-}
-
 app.get("/api/config/paypal", (req, res) =>
   res.json({ clientId: process.env.PAYPAL_CLIENT_ID })
 );
