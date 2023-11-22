@@ -13,9 +13,9 @@ const importData = async () => {
     try {
         await Order.deleteMany()
         await Product.deleteMany()
-        await User.deleteMany()
+        // await User.deleteMany()
 
-        await User.insertMany(users);
+        // await User.insertMany(users);
         const [adminId] = await User.find({isAdmin: true}).select("_id")
         const sampleProducts = products.map((product) => {
             return { ...product, user: adminId._id }

@@ -28,7 +28,7 @@ userSchema.methods.comparePassword = async function(plainPass) {
     return await bcrypt.compare(plainPass, this.password)
 }
 
-userSchema.pre('save', async function() {
+userSchema.pre('save', async function(next) {
     if (!this.isModified('password')) {
         next()
     }

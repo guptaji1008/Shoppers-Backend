@@ -1,3 +1,4 @@
+import { isValidObjectId } from 'mongoose'
 import { helperMessage } from '../middleware/helperMessage.js'
 import User from '../models/userSchema.js'
 import generateToken from '../utils/generateToken.js'
@@ -37,9 +38,7 @@ export const registerUser = async (req, res) => {
   if (userExist) return helperMessage(res, 'User already exist', 400)
 
   const newUser = new User({ name, email, password, isAdmin: false })
-  const abc = await newUser.save()
-
-  console.log(newUser, abc)
+  await newUser.save()
 
   generateToken(res, newUser._id)
 
@@ -84,14 +83,16 @@ export const getUserProfile = async (req, res) => {
 // @access  Private
 
 export const updateUserProfile = async (req, res) => {
-  const { user, body } = req
+  let { user, body } = req
   if (!user) return helperMessage(res, "User not found!")
+  user = await User.findById(user._id)
   const { name, email, password } = body
   user.name = name || user.name
   user.email = email || user.email
   if (password) {
     user.password = password
   }
+  console.log(user)
   const updatedUser = await user.save()
 
   res.status(201).json({
@@ -100,7 +101,6 @@ export const updateUserProfile = async (req, res) => {
     email: updatedUser.email, 
     isAdmin: updatedUser.isAdmin
   })
-
 }
 
 // @desc  Get users
@@ -108,7 +108,9 @@ export const updateUserProfile = async (req, res) => {
 // @access  Private/admin
 
 export const getUsers = async (req, res) => {
-  res.send('Get user profile by admin')  
+  const users = await User.find()
+  if (!users) return helperMessage(res, "No Users!", 404)
+  res.status(200).json(users)  
 }
 
 // @desc  Get user by Id
@@ -116,7 +118,13 @@ export const getUsers = async (req, res) => {
 // @access  Private/admin
 
 export const getUserById = async (req, res) => {
-  res.send('Get user by Id')  
+  const { id } = req.params
+  if (!isValidObjectId(id)) return helperMessage(res, "Invalid Id")
+
+  const user = await User.findById(id)
+  if (!user) return helperMessage(res, "User not found", 404)
+  
+  res.status(200).json(user)
 }
 
 // @desc  Delete user
@@ -124,7 +132,16 @@ export const getUserById = async (req, res) => {
 // @access  Private/admin
 
 export const deleteUser = async (req, res) => {
-  res.send('Delete user profile')  
+  const { id } = req.params
+  if (!isValidObjectId(id)) return helperMessage(res, "Invalid Id")
+
+  const user = await User.findById(id)
+  if (!user) return helperMessage(res, "User nor found", 404)
+  if (user && user.isAdmin) return helperMessage(res, "Cannot delete admin user", 400)
+
+  await User.deleteOne({ _id: user._id })
+
+  res.status(200).send("Deleted successfully!")
 }
 
 // @desc  Update user
@@ -132,5 +149,31 @@ export const deleteUser = async (req, res) => {
 // @access  Private/admin
 
 export const updateUser = async (req, res) => {
-  res.send('Update user profile')  
+  const { id } = req.params
+  if (!isValidObjectId(id)) return helperMessage(res, "Invalid Id")
+
+  const user = await User.findById(id)
+  if (!user) return helperMessage(res, "User nor found", 404)
+
+  const { name, email, isAdmin } = req.body
+  console.log(isAdmin)
+
+  user.name = name || user.name;
+  user.email = email || user.email;
+  if (isAdmin === "notAdmin") {
+    user.isAdmin = false
+  } else if (isAdmin === 'admin') {
+    user.isAdmin = true
+  } else {
+    user.isAdmin = user.isAdmin
+  }
+
+  const updatedUser = await user.save()
+
+  res.status(200).json({
+    _id: updatedUser._id,
+    name: updatedUser.name,
+    email: updatedUser.email,
+    isAdmin: updatedUser.isAdmin
+  })
 }
