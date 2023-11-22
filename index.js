@@ -9,7 +9,7 @@ import userRouter from "./routers/userRouter.js";
 import orderRouter from "./routers/orderRouter.js";
 import uploadRouter from "./routers/uploadRoutes.js";
 import { handleError, handleNotFound } from "./middleware/helperMessage.js";
-const port = process.env.PORT;
+const port = process.env.PORT || 8000;
 connectDb(); // connection to database
 
 const app = express();
