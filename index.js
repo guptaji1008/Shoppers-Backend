@@ -14,6 +14,8 @@ connectDb(); // connection to database
 
 const app = express();
 
+console.log(process.env.Node_VERSION)
+
 // body parser middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
