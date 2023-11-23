@@ -74,17 +74,6 @@ export const updateProduct = async (req, res) => {
     const product = await Product.findById(req.params.id);
     if (!product) return helperMessage(res, 'Product Not Found')
 
-    const { file } = req
-
-    if (file) {
-        const { secure_url: url, public_id } = await cloudinary.uploader.upload(
-            file.path,
-            {gravity: "face", width: 500, height: 500, crop: "thumb"}
-        )
-    
-        product.image = { url, public_id }
-    }
-
     product.name = name;
     product.price = price;
     product.description = description;
@@ -94,6 +83,29 @@ export const updateProduct = async (req, res) => {
 
     const updatedProduct = await product.save()
     res.status(201).json(updatedProduct);
+}
+
+// @desc  Add product
+// @route  PUT /api/products/:id/image
+// @access  private/protect
+export const changeImage = async (req, res) => {
+    const { id } = req.params
+    const { file } = req
+
+    if (!isValidObjectId(id)) return helperMessage(res, "Invalid token")
+
+    const product = await Product.findById(id)
+    if (!product) return helperMessage(res, "Product not found!")
+
+    if (file) {
+        const { secure_url: url, public_id } = await cloudinary.uploader.upload(
+            file.path,
+            {gravity: "face", width: 500, height: 500, crop: "thumb"}
+        )
+    
+        product.image = { url, public_id }
+    }
+    res.status(201).json({message: "Image Updated", image: product.image})
 }
 
 // @desc  Delete a product
