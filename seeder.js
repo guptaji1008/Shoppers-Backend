@@ -45,8 +45,24 @@ const destroyData = async () => {
     }
 };
 
+const setImage = async () => {
+    const image = {
+        url: process.env.SAMPLE_IMAGE_URL,
+        public_url: process.env.SAMPLE_PUBLIC_ID
+    }
+
+    const [adminId] = await User.find({isAdmin: true}).select("_id")
+    const newAllProduct = products.map((prod) => ({
+        ...prod, image, user: adminId._id
+    }))
+
+    await Product.insertMany(newAllProduct)
+
+}
+
 if (process.argv[2] === "-d") {
     destroyData()
 } else {
-    importData()
+    // importData()
+    setImage()
 }

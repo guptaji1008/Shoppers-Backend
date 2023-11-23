@@ -33,8 +33,9 @@ const productSchema = new mongoose.Schema({
         required: true
     },
     image: {
-        type: String,
-        required: true
+        type: Object,
+        url: String,
+        public_id: String
     },
     brand: {
         type: String,

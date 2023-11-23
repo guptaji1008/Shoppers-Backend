@@ -1,7 +1,7 @@
-import mongoose from 'mongoose'
 import { isValidObjectId } from 'mongoose'
 import { helperMessage } from '../middleware/helperMessage.js'
 import Product from '../models/productSchema.js'
+import cloudinary from '../cloud/index.js'
 
 // @desc  Fetch all product
 // @route  GET /api/products
@@ -41,11 +41,17 @@ export const getSingleProduct = async (req, res) => {
 // @route  POST /api/products
 // @access  private/protect
 export const createProduct = async (req, res) => {
+
+    const image = {
+        url: process.env.SAMPLE_IMAGE_URL,
+        public_id: process.env.SAMPLE_PUBLIC_ID
+    }
+
     const product = new Product({
         name: 'Sample name',
         price: 0,
         user: req.user._id,
-        image: '/images/sample.jpg',
+        image,
         brand: 'Sample brand',
         category: 'Sample category',
         countInStock: 0,
@@ -63,15 +69,25 @@ export const createProduct = async (req, res) => {
 // @route  PUT /api/products/:id
 // @access  private/protect
 export const updateProduct = async (req, res) => {
-    const { name, price, description, image, brand, category, countInStock } = req.body;
+    const { name, price, description, brand, category, countInStock } = req.body;
 
     const product = await Product.findById(req.params.id);
     if (!product) return helperMessage(res, 'Product Not Found')
 
+    const { file } = req
+
+    if (file) {
+        const { secure_url: url, public_id } = await cloudinary.uploader.upload(
+            file.path,
+            {gravity: "face", width: 500, height: 500, crop: "thumb"}
+        )
+    
+        product.image = { url, public_id }
+    }
+
     product.name = name;
     product.price = price;
     product.description = description;
-    product.image = image;
     product.brand = brand;
     product.category = category;
     product.countInStock = countInStock;
