@@ -19,7 +19,7 @@ export const getProducts = async (req, res) => {
 }
 
 // @desc  Fetch all product
-// @route  GET /api/allproducts
+// @route  GET /api/products/allproducts
 // @access  public
 export const getAllProducts = async (req, res) => {
     const allProducts = await Product.find()
