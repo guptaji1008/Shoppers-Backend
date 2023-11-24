@@ -91,6 +91,7 @@ export const updateProduct = async (req, res) => {
 export const changeImage = async (req, res) => {
     const { id } = req.params
     const { file } = req
+    if (!file) return helperMessage(res, "No file found")
 
     if (!isValidObjectId(id)) return helperMessage(res, "Invalid token")
 
@@ -102,7 +103,7 @@ export const changeImage = async (req, res) => {
             file.path,
             {gravity: "face", width: 500, height: 500, crop: "thumb"}
         )
-    
+        
         product.image = { url, public_id }
     }
     res.status(201).json({message: "Image Updated", image: product.image})
