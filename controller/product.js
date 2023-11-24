@@ -1,7 +1,7 @@
 import { isValidObjectId } from 'mongoose'
 import { helperMessage } from '../middleware/helperMessage.js'
 import Product from '../models/productSchema.js'
-import cloudinary from '../cloud/index.js'
+import {v2 as cloudinary} from 'cloudinary'
 
 // @desc  Fetch all product
 // @route  GET /api/products
@@ -92,19 +92,38 @@ export const changeImage = async (req, res) => {
     const { id } = req.params
     const { file } = req
     if (!file) return helperMessage(res, "No file found")
+    console.log(file)
 
     if (!isValidObjectId(id)) return helperMessage(res, "Invalid token")
 
     const product = await Product.findById(id)
     if (!product) return helperMessage(res, "Product not found!")
 
+    const { public_id: prev_public_id } = product.image
+    
     if (file) {
+        cloudinary.config({
+            cloud_name: process.env.CLOUD_NAME,
+            api_key: process.env.CLOUD_API_KEY,
+            api_secret: process.env.CLOUD_API_SECRET,
+            secure: true
+        })
+
+        if (prev_public_id && (prev_public_id !== process.env.SAMPLE_PUBLIC_ID)) {
+            const { result } = await cloudinary.uploader.destroy(prev_public_id);
+            if (result !== "ok") {
+                return helperMessage(res, "Could not delete file from cloud!");
+              }
+        }
+
         const { secure_url: url, public_id } = await cloudinary.uploader.upload(
             file.path,
             {gravity: "face", width: 500, height: 500, crop: "thumb"}
         )
+        console.log(url, public_id)
         
-        product.image = { url, public_id }
+        product.image = { ...product.image, url, public_id }
+        await product.save()
     }
     res.status(201).json({message: "Image Updated", image: product.image})
 }

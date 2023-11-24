@@ -13,7 +13,7 @@ router.get("/top", asyncHandler(getTopProduct))
 
 router.route('/:id').get(asyncHandler(getSingleProduct)).put( protect, admin, asyncHandler(updateProduct)).delete(protect, admin, asyncHandler(deleteProduct))
 
-router.put('/:id/image', upload.single('image'), protect, admin, asyncHandler(changeImage))
+router.put('/:id/image', upload.single('productImage'), protect, admin, asyncHandler(changeImage))
 
 router.route('/:id/reviews').post(protect, asyncHandler(createProductReview)).put(protect, asyncHandler(updateProductReview)).delete(protect, asyncHandler(deleteProductReview));
 
