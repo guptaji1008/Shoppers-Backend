@@ -23,7 +23,10 @@ app.use(cors(corsOptions))
 app.use(express.json());
 
 // cookie parser middleware
-app.use(cookieParser());
+app.use(cookieParser({
+  sameSite: 'None',
+  secure: true, // This requires HTTPS
+}));
 
 app.use("/api/products", productRouter);
 app.use("/api/users", userRouter);
