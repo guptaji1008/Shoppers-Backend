@@ -13,13 +13,14 @@ const port = process.env.PORT || 8000;
 connectDb(); // connection to database
 
 const app = express();
-app.use(cors())
 
 // body parser middleware
 app.use(express.json());
 
 // cookie parser middleware
 app.use(cookieParser());
+
+app.use(cors())
 
 app.use("/api/products", productRouter);
 app.use("/api/users", userRouter);
