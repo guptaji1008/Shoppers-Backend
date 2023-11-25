@@ -55,10 +55,12 @@ export const registerUser = async (req, res) => {
 // @access  Private
 
 export const logOutUser = async (req, res) => {
-  console.log(req.cookies)
   res.cookie('jwt', '', {
     httpOnly: true,
     expires: new Date(0),
+    path: '/login',
+    domain: "https://master--shopisz.netlify.app",
+    secure: true
   });
   res.status(200).json({ message: "Logged out successfully" })  
 }

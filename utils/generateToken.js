@@ -10,6 +10,8 @@ const generateToken = (res, userId) => {
     httpOnly: true,
     secure: true,
     sameSite: 'none',
+    path: '/login',
+    domain: "https://master--shopisz.netlify.app",
     maxAge: 30 * 24 * 60 * 60 * 1000  // 30 days
   })
 }
