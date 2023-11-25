@@ -12,19 +12,8 @@ import { handleError, handleNotFound } from "./middleware/helperMessage.js";
 const port = process.env.PORT || 8000;
 connectDb(); // connection to database
 
-const whitelist = ['https://shopisz.netlify.app'];
-const corsOptions = {
-    origin: function (origin, callback) {
-        if (whitelist.indexOf(origin) !== -1 || !origin) {
-            callback(null, true);
-        } else {
-            callback(new Error('Not allowed by CORS'));
-        }
-    },
-};
-
 const app = express();
-app.use(cors(corsOptions))
+app.use(cors())
 
 // body parser middleware
 app.use(express.json());
