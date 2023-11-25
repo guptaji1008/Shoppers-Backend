@@ -1,6 +1,7 @@
 import path from 'path'
 import express from "express";
 import cookieParser from "cookie-parser";
+import cors from 'cors'
 import dotenv from "dotenv";
 dotenv.config();
 import connectDb from "./db/conn.js";
@@ -12,6 +13,7 @@ const port = process.env.PORT || 8000;
 connectDb(); // connection to database
 
 const app = express();
+app.use(cors())
 
 // body parser middleware
 app.use(express.json());
