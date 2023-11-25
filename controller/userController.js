@@ -55,11 +55,7 @@ export const registerUser = async (req, res) => {
 // @access  Private
 
 export const logOutUser = async (req, res) => {
-  res.cookie('jwt', '', {
-    httpOnly: true,
-    expires: new Date(0),
-    secure: true
-  });
+  res.clearCookie('jwt')
   res.status(200).json({ message: "Logged out successfully" })  
 }
 
