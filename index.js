@@ -2,10 +2,6 @@ import path from 'path'
 import express from "express";
 import cookieParser from "cookie-parser";
 import cors from 'cors'
-const corsOptions = {
-  origin: 'https://master--shopisz.netlify.app',
-  credentials: true, // Allow cookies and other credentials to be sent
-};
 import dotenv from "dotenv";
 dotenv.config();
 import connectDb from "./db/conn.js";
@@ -17,23 +13,17 @@ const port = process.env.PORT || 8000;
 connectDb(); // connection to database
 
 const app = express();
-app.use(cors(corsOptions))
+app.use(cors())
 
 // body parser middleware
 app.use(express.json());
 
 // cookie parser middleware
-app.use(cookieParser({
-  sameSite: 'None',
-  secure: true, // This requires HTTPS
-}));
+app.use(cookieParser());
 
 app.use("/api/products", productRouter);
 app.use("/api/users", userRouter);
 app.use("/api/orders", orderRouter);
-
-const __dirname = path.resolve();
-app.use('/uploads', express.static(path.join(__dirname, '/uploads')))
 
 app.get("/api/config/paypal", (req, res) =>
   res.json({ clientId: process.env.PAYPAL_CLIENT_ID })
