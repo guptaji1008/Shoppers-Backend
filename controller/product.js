@@ -134,7 +134,25 @@ export const changeImage = async (req, res) => {
 export const deleteProduct = async (req, res) => {
     const {id} = req.params
     if (!isValidObjectId(id)) return helperMessage(res, "Invalid ID")
+    const product = await Product.findById(id)
+
+    const { public_id } = product.image
+
+    if (public_id && public_id !== process.env.SAMPLE_PUBLIC_ID) {
+        cloudinary.config({
+            cloud_name: process.env.CLOUD_NAME,
+            api_key: process.env.CLOUD_API_KEY,
+            api_secret: process.env.CLOUD_API_SECRET,
+            secure: true
+        })
+        const { result } = await cloudinary.uploader.destroy(public_id);
+            if (result !== "ok") {
+                return helperMessage(res, "Could not delete file from cloud!");
+              }
+    }
+
     await Product.findByIdAndDelete(id)
+
     res.status(200).json({message: "Item deleted!"})
 }
 
