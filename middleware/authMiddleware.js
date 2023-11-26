@@ -6,6 +6,7 @@ import { helperMessage } from './helperMessage.js';
 // Protect routes
 export const protect = asyncHandler( async (req, res, next) => {
     let token = req.cookies.jwt;
+    console.log(req)
     if (!token) return helperMessage(res, 'Not Authorized: No token!')
 
     const decode = jwt.verify(token, process.env.JWT_SECRET);
