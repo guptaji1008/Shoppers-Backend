@@ -14,7 +14,7 @@ connectDb(); // connection to database
 
 const app = express();
 app.use(cors({
-  origin: "https://master--shopisz.netlify.app",
+  origin: "https://shopisz.netlify.app/",
   credentials: true
 }))
 
